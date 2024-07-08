@@ -1,0 +1,79 @@
+version: '2'
+
+services:
+  prometheus:
+    image: "prom/prometheus"
+    container_name: "pga-prometheus"
+    user: root
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules:/etc/prometheus/rules
+      - ./prometheus/data:/prometheus
+#      - /etc/localtime:/etc/localtime
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+#      - '--web.enable-lifecycle'                                     # 启用 web 重载配置，不建议开启
+#    restart: always
+    networks:
+      custom:
+        ipv4_address: 192.168.178.10                                  # 使用自定义网络，固定容器 IP
+
+  grafana:
+    image: "grafana/grafana"
+    container_name: "pga-grafana"
+    user: root
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grfana.ini
+      - ./grafana/data:/var/lib/grafana
+#      - /etc/localtime:/etc/localtime
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin!@#                           # 修改 admin 账号，admin/admin!@#
+#    restart: always
+    networks:
+      custom:
+        ipv4_address: 192.168.178.20
+
+  alertmanager:
+    image: "prom/alertmanager"
+    container_name: "pga-alertmanager"
+    user: root
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager/data:/pga-alertmanager
+#      - /etc/localtime:/etc/localtime
+#    restart: always
+    networks:
+      custom:
+        ipv4_address: 192.168.178.30
+
+  webhook:
+    image: "timonwong/prometheus-webhook-dingtalk"
+    container_name: "pga-webhook-dingtalk"
+#    ports:                                                           # 如没有容器外部访问需求，不建议映射出去
+#      - "8060:8060"
+    volumes:
+      - ./webhook/prometheus-webhook-dingtalk.yml:/etc/prometheus-webhook-dingtalk/prometheus-webhook-dingtalk.yml
+      - ./webhook/template/template.tmpl:/prometheus-webhook-dingtalk/template.tmpl
+#      - /etc/localtime:/etc/localtime
+    command:
+      - '--config.file=/etc/prometheus-webhook-dingtalk/prometheus-webhook-dingtalk.yml'
+#    restart: always
+    networks:
+      custom:
+        ipv4_address: 192.168.178.40
+
+
+# 自定义网络，各容器使用固定 ip 串联配置
+networks:
+  custom:
+    ipam:
+      config:
+        - subnet: 192.168.178.0/24
+          gateway: 192.168.178.1

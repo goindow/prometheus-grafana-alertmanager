@@ -1,0 +1,43 @@
+groups:
+- name: host-rules
+  rules:
+
+  # 服务器宕机
+  - alert: HostDown
+    expr: up{job='node'} == 0
+    for: 1m
+    labels:
+      severity: 紧急
+    annotations:
+      summary: "{{ $labels.instance }} 服务器宕机"
+      description: "服务器宕机超过 1 分钟"
+
+  # CPU 使用率过高
+  - alert: HostCpuUsage
+    expr: sum(avg without (cpu)(irate(node_cpu_seconds_total{mode!='idle'}[5m]))) by (instance) * 100 > 85
+    for: 3m
+    labels:
+      severity: 严重
+    annotations:
+      summary: "{{ $labels.instance }} CPU 使用率过高"
+      description: "CPU 使用率 > 85%，已持续 3 分钟"
+
+  # 内存使用率过高
+  - alert: HostMemUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes * 100 > 85
+    for: 3m
+    labels:
+      severity: 严重
+    annotations:
+      summary: "{{ $labels.instance }} 内存使用率过高"
+      description: "内存使用率 > 85%，已持续 3 分钟"
+
+  # 磁盘使用率过高
+  - alert: HostDiskUsage
+    expr: 100 - (node_filesystem_avail_bytes{fstype=~"ext4|xfs"}/node_filesystem_size_bytes {fstype=~"ext4|xfs"} * 100) > 85
+    for: 5m
+    labels:
+      severity: 严重
+    annotations:
+      summary: "{{ $labels.instance }} 磁盘使用率过高"
+      description: "磁盘 {{ $labels.mountpoint }} 分区使用率 > 85%，已持续 5 分钟"
