@@ -32,12 +32,12 @@
 - timonwong/prometheus-webhook-dingtalk，第三方镜像，其中 prometheus-webhook-dingtalk 2.0.0
 
 
-## 端口说明（默认端口）
-> 建议替换默认端口
-- 9090，prometheus
-- 3000，grafana
-- 9093，alertmanager
-- 8060，prometheus-webhook-dingtalk
+## 容器网络说明（默认）
+> 192.168.178.0/24，容器固定 IP，建议替换默认端口
+- 192.168.178.10:9090，prometheus
+- 192.168.178.20:3000，grafana
+- 192.168.178.30:9093，alertmanager
+- 192.168.178.40:8060，prometheus-webhook-dingtalk
 
 
 ## docker-compose.yml
