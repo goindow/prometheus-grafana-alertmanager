@@ -33,7 +33,7 @@
 
 
 ## 容器网络说明（默认）
-> 192.168.178.0/24，容器固定 IP，建议替换默认端口
+> 自定义网络 192.168.178.0/24（容器 ip 固定，简化各组件关于地址的配置），建议替换默认端口
 - 192.168.178.10:9090，prometheus
 - 192.168.178.20:3000，grafana
 - 192.168.178.30:9093，alertmanager
@@ -54,15 +54,15 @@ docker-compose up -d --build
 ```
 
 ## 使用说明
-1. 验证所有组件是否运行成功
-> *容器均开启了端口映射情况下，localhost 请替换成宿主机 ip，如果修改了端口一并更换。推荐将所有组件的默认端口替换掉*
+1. **验证所有组件是否运行成功**
+> 容器均开启了端口映射情况下，请替换成宿主机 ip，如果修改了端口一并更换。推荐将所有组件的默认端口替换掉
 - prometheus，[http://localhost:9090](http://localhost:9090) 可访问即可
 - grafana，[http://localhost:3000](http://localhost:3000) 可访问即可（admin/admin!@#）
 - alertmanager，[http://localhost:9093](http://localhost:9093) 可访问即可
 - webhook，`curl -X POST http://localhost:8060/dingtalk/webhook2/send` 返回 "Bad Request" 即可
 
-2. 使用 exporter 实现指标采集
-- 在目标实例中运行 exporter（以主机监控 node_exporter 为例）
+2. **使用 exporter 实现指标采集**
+- 在目标实例中运行 exporter（以主机监控 node_exporter 为例，*假设目标机器 ip 为 192.168.33.110*）
 > 如果要监控 mysql、redis 等，需要安装对应的 exporter。可前往 prometheus 官网下载
 ```shell
 wget https://github.com/prometheus/node_exporter/releases/download/v1.8.1/node_exporter-1.8.1.linux-amd64.tar.gz
@@ -91,7 +91,7 @@ WantedBy=multi-user.target
 ```
 
 - 运行 exporter
-> 使用 [http://localhost:9100/metrics](http://localhost:9100/metrics) 访问 node-exporter，验证是否有数据
+> 使用 [http://192.168.33.110:9100/metrics](http://192.168.33.110:9100/metrics) 访问 node-exporter，验证是否有数据
 ```shell
 # 开机自启
 systemctl enable node-exporter.service
@@ -113,14 +113,14 @@ scrape_configs:
   - job_name: 'node'
     static_configs:
       - targets: 
-        - 127.0.0.1:9100    # node1 host，请替换为 node_exporter 所在实例地址
-#        - 127.0.0.2:9100    # node2 host
+        - 192.168.33.110:9100    # node1 host，请替换为 node_exporter 所在实例地址
+#        - 192.168.33.111:9100    # node2 host
 ```
 
 - 重载 prometheus 配置，验证数据是否收集成功
 > 访问 [http://localhost:9090/targets](http://localhost:9090/targets) 查看对应 node 是否为 up 状态
 
-3. 使用 grafana 实现数据可视化
+3. **使用 grafana 实现数据可视化**
 - 配置数据源
 点击设置 -> 数据源(data sources) -> 新增数据源 -> 选择 prometheus(填入对应地址) -> 确认
 
@@ -131,7 +131,7 @@ scrape_configs:
 点击 Dashboards -> 选择对应模板 -> 可以看到相关的监控图表
 > grafana/template/ 下包含了一些精选模板，可直接上传使用。也可前往 grafana 官网下载
 
-4. 使用 prometheus 实现告警
+4. **使用 prometheus 实现告警**
 - 编写告警规则文件
 > prometheus/rules/ 下包含了一些常用的 exporter 的告警规则文件，可以直接使用
 ```yml
@@ -165,14 +165,14 @@ systemctl stop node-exporter.service
 ```
 验证是否能触发告警（同样在上述地址查看）
 
-5. 使用 alertmanager 实现告警通知
+5. **使用 alertmanager 实现告警通知**
 - 以上述 alert:HostDown 告警为例
 > 访问 [http://localhost:9093/#/alerts](http://localhost:9093/#/alerts) 查看上述告警是否推送过来
 
 - 配置 alertmanager.yml 通知规则
 > 如果需要修改接收者，或者有分组、抑制、静默等需求可自由修改。配置选项说明请参考其他文档
 
-6. 使用 prometheus-webhook-dingtalk 实现钉钉群机器人告警通知
+6. **使用 prometheus-webhook-dingtalk 实现钉钉群机器人告警通知**
 > prometheus-webhook-dingtalk 可理解为 dingtalk 告警通知代理
 - 获取机器人 webhook 地址
 新建机器人 -> 复制 Webhook 地址
