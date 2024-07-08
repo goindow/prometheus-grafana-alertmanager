@@ -55,7 +55,7 @@ docker-compose up -d --build
 
 ## 使用说明
 **1. 验证所有组件是否运行成功**
-> 容器均开启了端口映射情况下，请替换成宿主机 ip，如果修改了端口一并更换。推荐将所有组件的默认端口替换掉
+> 容器均开启了端口映射情况下，请替换成宿主机 ip，如果修改了端口一并更换。建议修改默认端口
 - prometheus，[http://localhost:9090](http://localhost:9090) 可访问即可
 - grafana，[http://localhost:3000](http://localhost:3000) 可访问即可（admin/admin!@#）
 - alertmanager，[http://localhost:9093](http://localhost:9093) 可访问即可
