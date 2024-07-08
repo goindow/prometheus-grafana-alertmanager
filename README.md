@@ -122,12 +122,12 @@ scrape_configs:
 > 访问 [http://localhost:9090/targets](http://localhost:9090/targets) 查看对应 node 是否为 up 状态
 
 **3. 使用 grafana 实现数据可视化**
-- 配置数据源
-*点击设置 -> 数据源(data sources) -> 新增数据源 -> 选择 prometheus(填入对应地址) -> 确认*
-- 配置 dashboard 模板
-*点击加号 -> 导入(import) -> 上传模板文件(json 文件) -> load*
-- 查看监控图表
-*点击 Dashboards -> 选择对应模板 -> 可以看到相关的监控图表*
+- 配置数据源，
+  *点击设置 -> 数据源(data sources) -> 新增数据源 -> 选择 prometheus(填入对应地址) -> 确认*
+- 配置 dashboard 模板，
+  *点击加号 -> 导入(import) -> 上传模板文件(json 文件) -> load*
+- 查看监控图表，
+  *点击 Dashboards -> 选择对应模板 -> 可以看到相关的监控图表*
 > grafana/template/ 下包含了一些精选模板，可直接上传使用。也可前往 grafana 官网下载
 
 **4. 使用 prometheus 实现告警**
