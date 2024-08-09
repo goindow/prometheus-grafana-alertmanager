@@ -177,7 +177,7 @@ systemctl stop node-exporter.service
   - *选择关键词，推荐设置 `prometheus、告警、故障` 等关键词*
   - *选择加签，复制签名*
 
-- 配置 prometheus-webhook-dingtalk.yml 新增通知模（忽略，已配置）
+- 配置 prometheus-webhook-dingtalk.yml 新增通知模板（忽略，已配置）
 ```
 templates:
   - /prometheus-webhook-dingtalk/template.tmpl
