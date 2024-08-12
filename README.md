@@ -234,4 +234,3 @@ systemctl stop node-exporter.service
 systemctl start node-exporter.service
 ```
 *验证钉钉群机器人是否发送恢复通知*
-1
